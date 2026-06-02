@@ -1,0 +1,295 @@
+{
+  "agentspec_version": "26.1.0",
+  "component_type": "Flow",
+  "id": "company-discovery-agent-flow",
+  "name": "Company Discovery Agent",
+  "description": "Stateless leaf agent that takes a company name and/or domain and returns a normalized CRM accountId (provider-native, e.g. Twenty Company id), optionally enriched with an Apollo organization id. Dedups via crm_account_search + domainName match before creating; calls crm_account_update on hit, crm_account_create on miss.",
+  "metadata": {
+    "cinatra": {
+      "type": "flow",
+      "packageName": "@cinatra-ai/company-discovery-agent",
+      "packageVersion": "0.1.3",
+      "hitlScreens": [],
+      "llm": {
+        "preferredProvider": "openai",
+        "preferredModel": "gpt-5.5"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "title": "companyName",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "title": "domain",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "title": "apolloLookup",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "title": "cinatra_run_id",
+      "type": "string",
+      "default": ""
+    }
+  ],
+  "outputs": [
+    {
+      "title": "accountId",
+      "type": "string"
+    },
+    {
+      "title": "wasMerged",
+      "type": "boolean"
+    },
+    {
+      "title": "apolloOrganizationId",
+      "type": "string",
+      "default": ""
+    }
+  ],
+  "start_node": {
+    "$component_ref": "start"
+  },
+  "nodes": [
+    {
+      "$component_ref": "start"
+    },
+    {
+      "$component_ref": "discover"
+    },
+    {
+      "$component_ref": "end"
+    }
+  ],
+  "control_flow_connections": [
+    {
+      "component_type": "ControlFlowEdge",
+      "name": "start_to_discover",
+      "from_node": {
+        "$component_ref": "start"
+      },
+      "to_node": {
+        "$component_ref": "discover"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "name": "discover_to_end",
+      "from_node": {
+        "$component_ref": "discover"
+      },
+      "to_node": {
+        "$component_ref": "end"
+      }
+    }
+  ],
+  "data_flow_connections": [
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_companyName_to_discover_companyName",
+      "source_node": {
+        "$component_ref": "start"
+      },
+      "source_output": "companyName",
+      "destination_node": {
+        "$component_ref": "discover"
+      },
+      "destination_input": "companyName"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_domain_to_discover_domain",
+      "source_node": {
+        "$component_ref": "start"
+      },
+      "source_output": "domain",
+      "destination_node": {
+        "$component_ref": "discover"
+      },
+      "destination_input": "domain"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_apolloLookup_to_discover_apolloLookup",
+      "source_node": {
+        "$component_ref": "start"
+      },
+      "source_output": "apolloLookup",
+      "destination_node": {
+        "$component_ref": "discover"
+      },
+      "destination_input": "apolloLookup"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_accountId_to_end_accountId",
+      "source_node": {
+        "$component_ref": "discover"
+      },
+      "source_output": "accountId",
+      "destination_node": {
+        "$component_ref": "end"
+      },
+      "destination_input": "accountId"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_wasMerged_to_end_wasMerged",
+      "source_node": {
+        "$component_ref": "discover"
+      },
+      "source_output": "wasMerged",
+      "destination_node": {
+        "$component_ref": "end"
+      },
+      "destination_input": "wasMerged"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_apolloOrganizationId_to_end_apolloOrganizationId",
+      "source_node": {
+        "$component_ref": "discover"
+      },
+      "source_output": "apolloOrganizationId",
+      "destination_node": {
+        "$component_ref": "end"
+      },
+      "destination_input": "apolloOrganizationId"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "start_cinatra_run_id_to_discover_agent_run_id",
+      "source_node": {
+        "$component_ref": "start"
+      },
+      "source_output": "cinatra_run_id",
+      "destination_node": {
+        "$component_ref": "discover"
+      },
+      "destination_input": "agent_run_id"
+    }
+  ],
+  "$referenced_components": {
+    "start": {
+      "component_type": "StartNode",
+      "id": "start",
+      "name": "Inputs",
+      "metadata": {
+        "cinatra": {
+          "required": [],
+          "hidden": [
+            "companyName",
+            "domain",
+            "apolloLookup",
+            "cinatra_run_id"
+          ]
+        }
+      },
+      "inputs": [
+        {
+          "title": "companyName",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "title": "domain",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "title": "apolloLookup",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "title": "cinatra_run_id",
+          "type": "string",
+          "default": ""
+        }
+      ]
+    },
+    "discover": {
+      "component_type": "ApiNode",
+      "id": "discover",
+      "name": "Discover company",
+      "url": "{{CINATRA_BASE_URL}}/api/llm-bridge",
+      "http_method": "POST",
+      "data": {
+        "agent_id": "company-discovery-agent",
+        "system": "You are a stateless company discovery agent. Follow the SKILL.md step-by-step. Return a single JSON object with {accountId, wasMerged, apolloOrganizationId} — nothing else.",
+        "user": "Discover the company described by these inputs. At least one of companyName or domain must be present (validate in Step 1).\nInputs:\n- companyName: {{ companyName }}\n- domain: {{ domain }}\n- apolloLookup: {{ apolloLookup }}",
+        "agent_run_id": "{{ agent_run_id }}",
+        "cinatra_llm": {
+          "preferredProvider": "openai",
+          "preferredModel": "gpt-5.5"
+        }
+      },
+      "inputs": [
+        {
+          "title": "companyName",
+          "type": "string"
+        },
+        {
+          "title": "domain",
+          "type": "string"
+        },
+        {
+          "title": "apolloLookup",
+          "type": "boolean"
+        },
+        {
+          "title": "agent_run_id",
+          "type": "string"
+        }
+      ],
+      "outputs": [
+        {
+          "title": "accountId",
+          "type": "string"
+        },
+        {
+          "title": "wasMerged",
+          "type": "boolean"
+        },
+        {
+          "title": "apolloOrganizationId",
+          "type": "string"
+        }
+      ],
+      "metadata": {
+        "cinatra": {
+          "riskClass": "write_safe",
+          "requiresApproval": false,
+          "packageName": "@cinatra-ai/company-discovery-agent",
+          "description": "Single ApiNode → /api/llm-bridge. Bridge auto-discovers SKILL.md from agents/cinatra/company-discovery-agent/skills/company-discovery-agent/SKILL.md (via agent_id). metadata.cinatra.toolboxes is INTENTIONALLY OMITTED so the always-inject path runs — the LLM reaches crm_account_search, crm_account_create, crm_account_update, apollo_validate, and apollo_administration_get via the injected Cinatra self-MCP. The flow routes through the provider-agnostic CRM facade (Twenty today; HubSpot/Salesforce later)."
+        }
+      }
+    },
+    "end": {
+      "component_type": "EndNode",
+      "id": "end",
+      "name": "End",
+      "outputs": [
+        {
+          "title": "accountId",
+          "type": "string"
+        },
+        {
+          "title": "wasMerged",
+          "type": "boolean"
+        },
+        {
+          "title": "apolloOrganizationId",
+          "type": "string",
+          "default": ""
+        }
+      ]
+    }
+  }
+}

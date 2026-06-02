@@ -1,0 +1,12 @@
+{
+  "name": "@cinatra-ai/company-discovery-agent",
+  "version": "0.1.3",
+  "license": "Apache-2.0",
+  "description": "Stateless leaf agent that takes a company name and/or domain and returns a normalized accountId through the crm_* facade, optionally enriched with an Apollo organization id. Dedups via crm_account_search on websiteHost.",
+  "type": "module",
+  "cinatra": {
+    "apiVersion": "cinatra.ai/v1",
+    "kind": "agent",
+    "dependencies": []
+  }
+}
