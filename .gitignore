@@ -1,0 +1,14 @@
+node_modules/
+dist/
+
+# Extracted extension repos ship no committed lockfile (CI installs with --no-frozen-lockfile)
+pnpm-lock.yaml
+
+.env
+.env.*
+!.env.example
+*.log
+
+.DS_Store
+.idea/
+.vscode/
