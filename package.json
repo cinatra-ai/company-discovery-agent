@@ -11,6 +11,7 @@
   "cinatra": {
     "apiVersion": "cinatra.ai/v1",
     "kind": "agent",
+    "displayName": "Company Discovery Agent",
     "dependencies": [
       {
         "packageName": "@cinatra-ai/apollo-connector",
@@ -28,6 +29,15 @@
         "primitive": "apollo_administration_get",
         "requirement": "optional"
       }
-    ]
+    ],
+    "packageType": "agent",
+    "manifestVersion": 1,
+    "sourceTemplateId": "company-discovery-agent-flow",
+    "sourceVersionId": "edc8fc0f-6aef-4795-941b-cc02e88e18e8",
+    "sourceVersionNumber": 1,
+    "riskLevel": "low",
+    "hasApprovalGates": false,
+    "toolAccess": [],
+    "ownerOrgId": null
   }
 }
