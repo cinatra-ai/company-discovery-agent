@@ -10,7 +10,7 @@ Turn a company name or website into one clean, deduplicated account in your work
 
 **API contract.** Inputs: `companyName` (string), `domain` (string — protocol/www/path stripped), `apolloLookup` (boolean, default `true`). At least one of `companyName`/`domain` must be non-empty or the agent returns `{"error":"at_least_one_of_companyName_or_domain_required"}`. Outputs: `accountId`, `wasMerged` (boolean), `apolloOrganizationId` (empty string when unavailable).
 
-**Development.** Logic in `skills/company-discovery-agent/SKILL.md`; flow in `cinatra/oas.json`. Validate: `node extension-kind-gate.mjs --package-root .`
+**Development.** Logic and flow both live in `cinatra/oas.json`. Validate: `node extension-kind-gate.mjs --package-root .`
 
 **Troubleshooting.** Duplicate accounts — pass a consistent `domain`; dedup is domain-first (normalized host), then name-matched. Apollo silently skipped — verify the connector is active in settings; errors never abort the run.
 
