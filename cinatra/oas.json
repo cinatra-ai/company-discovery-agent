@@ -184,7 +184,6 @@
           "required": [],
           "hidden": [
             "companyName",
-            "domain",
             "apolloLookup",
             "cinatra_run_id"
           ]
