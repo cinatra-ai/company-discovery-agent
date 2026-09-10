@@ -183,7 +183,10 @@
       "name": "Inputs",
       "metadata": {
         "cinatra": {
-          "required": [],
+          "required": [
+            "companyName",
+            "domain"
+          ],
           "hidden": [
             "apolloLookup",
             "cinatra_run_id"

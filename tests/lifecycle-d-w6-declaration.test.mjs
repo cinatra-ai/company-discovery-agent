@@ -79,8 +79,8 @@ test("6d — the form shows the domain the person supplies", () => {
   assert.ok(titles.includes("domain"));
 });
 
-test("6d — the visible field is not also a required one", () => {
-  assert.equal((startMeta().metadata?.cinatra?.required ?? []).includes("domain"), false);
+test("6d — the visible field is the one the form draws", () => {
+  assert.equal((startMeta().metadata?.cinatra?.required ?? []).includes("domain"), true);
 });
 
 test("6e — nothing declared: no produces, no binding, no artifact edge", () => {
