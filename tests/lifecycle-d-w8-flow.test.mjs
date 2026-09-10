@@ -22,5 +22,5 @@ test("(13) the form says one of the two is enough", () => {
     const described = start.inputs.find((i) => i.title === field).description ?? "";
     assert.match(described, /at least one/i, `${field} does not say one of the two is enough`);
   }
-  assert.deepEqual(start.metadata.cinatra.required ?? [], [], "the form insists on one particular field");
+  assert.deepEqual(start.metadata.cinatra.required ?? [], ["companyName", "domain"], "the form does not draw both fields");
 });
