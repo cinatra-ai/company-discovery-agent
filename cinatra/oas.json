@@ -65,6 +65,9 @@
       "$component_ref": "discover"
     },
     {
+      "$component_ref": "discovery_summary"
+    },
+    {
       "$component_ref": "end"
     }
   ],
@@ -81,9 +84,19 @@
     },
     {
       "component_type": "ControlFlowEdge",
-      "name": "discover_to_end",
+      "name": "discover_to_discovery_summary",
       "from_node": {
         "$component_ref": "discover"
+      },
+      "to_node": {
+        "$component_ref": "discovery_summary"
+      }
+    },
+    {
+      "component_type": "ControlFlowEdge",
+      "name": "discovery_summary_to_end",
+      "from_node": {
+        "$component_ref": "discovery_summary"
       },
       "to_node": {
         "$component_ref": "end"
@@ -174,6 +187,30 @@
         "$component_ref": "discover"
       },
       "destination_input": "agent_run_id"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_accountId_to_discovery_summary_accountId",
+      "source_node": {
+        "$component_ref": "discover"
+      },
+      "source_output": "accountId",
+      "destination_node": {
+        "$component_ref": "discovery_summary"
+      },
+      "destination_input": "accountId"
+    },
+    {
+      "component_type": "DataFlowEdge",
+      "name": "discover_wasMerged_to_discovery_summary_wasMerged",
+      "source_node": {
+        "$component_ref": "discover"
+      },
+      "source_output": "wasMerged",
+      "destination_node": {
+        "$component_ref": "discovery_summary"
+      },
+      "destination_input": "wasMerged"
     }
   ],
   "$referenced_components": {
@@ -272,6 +309,29 @@
           "requiresApproval": false,
           "packageName": "@cinatra-ai/company-discovery-agent",
           "description": "Single ApiNode \u2192 /api/llm-bridge. The agent's operating instructions are inline in data.system (no embedded skill bundle). metadata.cinatra.toolboxes is INTENTIONALLY OMITTED so the always-inject path runs \u2014 the LLM reaches crm_account_search, crm_account_create, crm_account_update, apollo_validate, and apollo_administration_get via the injected Cinatra self-MCP. The flow routes through the provider-agnostic CRM facade (Twenty today; HubSpot/Salesforce later)."
+        }
+      }
+    },
+    "discovery_summary": {
+      "component_type": "OutputMessageNode",
+      "id": "discovery_summary",
+      "name": "Company discovery result",
+      "inputs": [
+        {
+          "title": "accountId",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "title": "wasMerged",
+          "type": "boolean",
+          "default": false
+        }
+      ],
+      "message": "{# pyagentspec-input-hint (do not remove): {{ accountId }} {{ wasMerged }} #}{% if not accountId %}No company account was found or created: the run needs the company's name or its domain, and a connected CRM to search and to write the account in.{% elif wasMerged %}The company was already in the CRM, so its existing account was used.{% else %}The company was not in the CRM yet, so a new account was created for it.{% endif %}",
+      "metadata": {
+        "cinatra": {
+          "purpose": "plain-language-company-discovery-ending"
         }
       }
     },
